@@ -1,46 +1,42 @@
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
 <html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
-    <title>Add user</title>
+    <title>Add User</title>
 </head>
 <body>
 
-<form th:method="POST" th:action="@{/admin}" th:object="${user}">
-    <table border="0">
-        <tr>
-            <th><label for="name">Enter username</label></th>
-            <th><input type="text" th:field="*{username}" id="name"/></th>
-        </tr>
+<form
+        th:method="POST" th:action="@{/admin/addUser}" th:object="${user}">
+    <label for="username">Enter username:</label>
+    <input type="text" th:field="*{username}" id="username"/>
+    <div style="color:red" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Username Error</div>
+    <br/>
 
-        <tr>
-            <th><label for="lastName">Enter password</label></th>
-            <th><input type="text" th:field="*{password}" id="lastName"/></th>
-        </tr>
+    <p>
+        <label>Select role:
+            <input type="checkbox" name="roles"
+                   th:each="role : ${roles}"
+                   th:text="${role.getRole()}"
+                   th:value="${role.getId()}"
+                   th:field="*{roles}"
+            />
+        </label>
+    </p>
 
-        <tr>
-            <th><label for="email">Enter email</label></th>
-            <th><input type="text" th:field="*{email}" id="email"/></th>
-        </tr>
+    <label for="email">Enter email:</label>
+    <input type="text" th:field="*{email}" id="email"/>
+    <div style="color:red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email Error</div>
+    <br/>
 
-        <tr>
-            <th><label>Select the role: </label></th>
-            <th>
-                <input type="checkbox" name="allRoles"
-                th:each="role: ${roles}"
-                th:text="${role.getRoleName()}"
-                th:value="${role.id}"
-                th:field="*{roles}">
-            </th>
-        </tr>
+    <label for="password">Enter password:</label>
+    <input type="password" th:field="*{password}" id="password"/>
+    <div style="color:red" th:if="${#fields.hasErrors('password')}" th:errors="*{email}">Email Error</div>
+    <br/>
+    <input type="submit" value="Create!">
 
-        <tr align="right">
-            <th></th>
-            <th><input type="submit" value="Add"/></th>
-        </tr>
-    </table>
 </form>
-<a th:href="@{/admin/users}">To the list of users</a>
-<div><a th:href="@{/logout}">Logout</a></div>
 </body>
 </html>

@@ -6,58 +6,46 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 
 
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", unique = true)
     private String username;
 
-    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "email", nullable = false)
     private String email;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinTable(name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Collection<Role> roles;
-
-    public void addRole(Role role) {
-        this.roles.add(role);
-        role.getUsers().add(this);
-    }
-
-    public void removeRole(Role role) {
-        this.roles.remove(role);
-        role.getUsers().remove(this);
-    }
-
-    public Collection<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Collection<Role> roles) {
-        this.roles = roles;
-    }
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinColumn(referencedColumnName = "user_id")
+    private Set<Role> roles;
 
     public User() {
     }
 
-    public User(String username, String password, String email) {
+    public User(String username, String password, String email, Set<Role> role) {
         this.username = username;
         this.password = password;
         this.email = email;
+        this.roles = role;
     }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
 
     public void setId(Long id) {
         this.id = id;
@@ -119,7 +107,7 @@ public class User implements UserDetails {
     public String roleToString() {
         StringBuilder stringBuilder = new StringBuilder();
         for (Role role : roles) {
-            stringBuilder.append(role.getRoleName()).append(" ");
+            stringBuilder.append(role.getRole()).append(" ");
         }
         return stringBuilder.toString();
     }

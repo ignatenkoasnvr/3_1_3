@@ -1,34 +1,31 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+>
 <head>
-    <title>Spring Security Example</title>
+    <title>User info</title>
 </head>
 <body>
-<h1>User, welcome spring boot security page!</h1>
-    <table border="0">
-        <tr>
-            <th>ID</th>
-            <td th:text="${user.id}"/>
-        </tr>
-        <tr>
-            <th>Username</th>
-            <td th:text="${user.username}"/>
-        </tr>
-        <tr>
-            <th>Password</th>
-            <td th:text="${user.password}"/>
-        </tr>
-        <tr>
-            <th>email</th>
-            <td th:text="${user.email}"/>
-        </tr>
-        <tr>
-            <th>Role</th>
-            <td th:text="${user.roleToString()}"/>
-        </tr>
-    </table>
+<h1>User info</h1>
+<table border="0">
+    <tr>
+        <th>ID</th>
+        <td th:text="${user.id}"/>
+    </tr>
+    <tr>
+        <th>Username</th>
+        <td th:text="${user.username}"/>
+    </tr>
+    <tr>
+        <th>email</th>
+        <td th:text="${user.email}"/>
+    </tr>
+    <tr>
+        <th>Role</th>
+        <td th:text="${user.roleToString()}"/>
+    </tr>
+</table>
 
-<div> <a th:href="@{/admin/users}">To the list of users</a> </div>
+<div><a th:href="@{/admin}">Back</a></div>
 <div><a th:href="@{/logout}">Logout</a></div>
 </body>
 </html>
