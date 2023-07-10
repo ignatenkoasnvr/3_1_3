@@ -6,6 +6,4 @@ import java.util.List;
 
 public interface RoleService {
     public List<Role> getRoles();
-
-    public void saveRoles(Role role);
 }

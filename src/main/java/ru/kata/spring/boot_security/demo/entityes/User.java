@@ -13,33 +13,55 @@ import java.util.Set;
 @Table(name = "users")
 public class User implements UserDetails {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username", unique = true)
-    private String username;
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
 
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
+
+    @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinColumn(referencedColumnName = "user_id")
+    @Column(name = "age")
+    private Byte age;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+
     private Set<Role> roles;
 
     public User() {
     }
 
-    public User(String username, String password, String email, Set<Role> role) {
-        this.username = username;
+    public User(String firstName, String lastName, String password, String email, Byte age, Set<Role> roles) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.password = password;
         this.email = email;
-        this.roles = role;
+        this.age = age;
+        this.roles = roles;
     }
 
     public Set<Role> getRoles() {
         return roles;
+    }
+
+    public String getRolesToString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Role role : roles) {
+            stringBuilder.append(role.getRoleName()).append(" ");
+        }
+        return stringBuilder.toString();
     }
 
     public void setRoles(Set<Role> roles) {
@@ -55,8 +77,20 @@ public class User implements UserDetails {
         return id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     @Override
@@ -79,10 +113,6 @@ public class User implements UserDetails {
         return true;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getRoles();
@@ -90,6 +120,15 @@ public class User implements UserDetails {
 
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return getEmail();
+    }
+
+    public void setUsername(String email) {
+        setEmail(email);
     }
 
     public void setPassword(String password) {
@@ -104,12 +143,12 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public String roleToString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Role role : roles) {
-            stringBuilder.append(role.getRole()).append(" ");
-        }
-        return stringBuilder.toString();
+    public Byte getAge() {
+        return age;
+    }
+
+    public void setAge(Byte age) {
+        this.age = age;
     }
 
     @Override
@@ -118,7 +157,6 @@ public class User implements UserDetails {
         if (!(o instanceof User)) return false;
         User user = (User) o;
         return getId().equals(user.getId())
-                && getUsername().equals(user.getUsername())
                 && getPassword().equals(user.getPassword())
                 && getEmail().equals(user.getEmail())
                 && getRoles().equals(user.getRoles());
@@ -126,6 +164,6 @@ public class User implements UserDetails {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getUsername(), getPassword(), getEmail(), getRoles());
+        return Objects.hash(getId(), getFirstName(), getPassword(), getEmail(), getRoles());
     }
 }

@@ -21,10 +21,4 @@ public class RoleServiceImp implements RoleService {
     public List<Role> getRoles() {
         return roleRepository.findAll();
     }
-
-    @Override
-    @Transactional
-    public void saveRoles(Role role) {
-        roleRepository.save(role);
-    }
 }

@@ -1,6 +1,5 @@
 package ru.kata.spring.boot_security.demo.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,18 +20,21 @@ public class UserServiceImp implements UserService {
     private UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Autowired
     public UserServiceImp(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Override
     public List<User> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            user.getRoles();
+        }
         return userRepository.findAll();
     }
 
@@ -51,8 +53,8 @@ public class UserServiceImp implements UserService {
 
     @Override
     @Transactional
-    public void updateUser(User user, Long id) {
-        if (userRepository.findById(id).get().getPassword().equals(user.getPassword())) {
+    public void updateUser(User user) {
+        if (userRepository.findByEmail(user.getEmail()).getPassword().equals(user.getPassword())) {
             userRepository.save(user);
         } else {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
@@ -60,24 +62,18 @@ public class UserServiceImp implements UserService {
         }
     }
 
-    @Override
-    public User findById(Long id) {
-        return userRepository.findById(id).get();
-    }
-
-    @Override
     @Transactional
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = findByUsername(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email);
         if (user == null) {
-            throw new UsernameNotFoundException(String.format("User '%s' not found", username));
+            throw new UsernameNotFoundException(String.format("User with email '%s' not found", email));
         }
 
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
-                mapRolesToAuthority(user.getRoles()));
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
+                user.getAuthorities());
     }
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthority(Collection<Role> roles) {
-        return roles.stream().map(r -> new SimpleGrantedAuthority(r.getRole())).collect(Collectors.toList());
+        return roles.stream().map(r -> new SimpleGrantedAuthority(r.getName())).collect(Collectors.toList());
     }
 }
