@@ -13,6 +13,7 @@ import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,12 +55,17 @@ public class UserServiceImp implements UserService {
     @Override
     @Transactional
     public void updateUser(User user) {
-        if (userRepository.findByEmail(user.getEmail()).getPassword().equals(user.getPassword())) {
+        if (user.getPassword().equals(user.getPassword())) {
             userRepository.save(user);
         } else {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             userRepository.save(user);
         }
+    }
+    @Override
+    @Transactional
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
     }
 
     @Transactional

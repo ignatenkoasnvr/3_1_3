@@ -24,13 +24,10 @@ public class User implements UserDetails {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "age")
     private Byte age;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})

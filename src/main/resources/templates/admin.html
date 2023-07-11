@@ -92,7 +92,7 @@
                                         </button>
                                     </td>
 
-                                    <div class="modal fade" th:id="${'modalEdit'+user.id}">
+                                    <div class="modal fade" th:id="${'modalEdit' + user.id}">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <form id="formEdit" th:method="PATCH"
@@ -396,7 +396,7 @@
                                     <td th:text="${admin.getLastName()}"></td>
                                     <td th:text="${admin.getAge()}"></td>
                                     <td th:text="${admin.getEmail()}"></td>
-                                    <td th:text="${admin.getRolesToString()}"></td>
+                                    <td th:text="${admin.getRolesToString()}"></td>0-
                                 </tr>
                                 </tbody>
                             </table>
