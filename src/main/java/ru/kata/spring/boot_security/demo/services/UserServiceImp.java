@@ -2,6 +2,7 @@ package ru.kata.spring.boot_security.demo.services;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,7 +14,6 @@ import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +28,15 @@ public class UserServiceImp implements UserService {
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    public User findById(Long id) {
+        return userRepository.findById(id).get();
+    }
+
+    @Override
+    public User getAuthUser() {
+        return userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
     @Override
@@ -54,18 +63,13 @@ public class UserServiceImp implements UserService {
 
     @Override
     @Transactional
-    public void updateUser(User user) {
-        if (user.getPassword().equals(user.getPassword())) {
+    public void updateUser(User user, Long id) {
+        if (userRepository.findById(id).get().getPassword().equals(user.getPassword())) {
             userRepository.save(user);
         } else {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             userRepository.save(user);
         }
-    }
-    @Override
-    @Transactional
-    public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
     }
 
     @Transactional
@@ -75,8 +79,7 @@ public class UserServiceImp implements UserService {
             throw new UsernameNotFoundException(String.format("User with email '%s' not found", email));
         }
 
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
-                user.getAuthorities());
+        return user;
     }
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthority(Collection<Role> roles) {
